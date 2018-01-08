@@ -8,6 +8,7 @@ namespace RoomConstrutorExperiment
 {
     class Program
     {
+        public Cursor MyCursor = new Cursor();
         Room[,] Rooms;
         int X;
         string XInput;
@@ -16,8 +17,9 @@ namespace RoomConstrutorExperiment
         int AmountOfRooms;
         string InputAmountOfRooms;
         Random RNG = new Random();
+        bool refresh = false;
 
-        static void Main(string[] args){new Program().Start();}
+        static void Main(string[] args) { new Program().Start(); }
 
         public void Start()
         {
@@ -25,21 +27,21 @@ namespace RoomConstrutorExperiment
             Console.WriteLine("Hello and welcome to this demostartion");
             Console.Write("What should the X size of the map be: ");
             XInput = Console.ReadLine();
-            if( !(int.TryParse(XInput, out X)))
+            if (!(int.TryParse(XInput, out X)))
             {
-               X = Redo();
+                X = Redo();
             }
             Console.Clear();
             Console.Write("What should the Y size of the map be: ");
             YInput = Console.ReadLine();
-            if ( !(int.TryParse(YInput, out Y)))
+            if (!(int.TryParse(YInput, out Y)))
             {
                 Y = Redo();
             }
             Console.Clear();
             Console.Write("How many rooms would you like to be created: ");
             InputAmountOfRooms = Console.ReadLine();
-            if(!(int.TryParse(InputAmountOfRooms, out AmountOfRooms)))
+            if (!(int.TryParse(InputAmountOfRooms, out AmountOfRooms)))
             {
                 AmountOfRooms = Redo();
             }
@@ -47,12 +49,83 @@ namespace RoomConstrutorExperiment
             Rooms = new Room[X, Y];
             PopulateRooms(AmountOfRooms);
             DrawArray();
-            if(Console.ReadKey().Key == ConsoleKey.Spacebar || Console.ReadKey().Key == ConsoleKey.Enter)
+            while (true)
+            {
+                KeyCommands(Console.ReadKey().Key);
+            }
+
+        }
+
+        private void KeyCommands(ConsoleKey key)
+        {
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (MyCursor.GetCords()[0] == 0)
+                    {
+                        MyCursor.SetX(Rooms.GetLength(0) - 1);
+                        refresh = true;
+
+                    }
+                    else if (Rooms[MyCursor.GetX() - 1, MyCursor.GetY()] != null)
+                    {
+                        MyCursor.SetX(MyCursor.GetX() - 1);
+                        refresh = true;
+                    }
+                    MyCursor.SetCurrentRoom(Rooms[MyCursor.GetX(), MyCursor.GetY()]);
+                    break;
+
+                case ConsoleKey.DownArrow:
+                    if (MyCursor.GetCords()[0] == (Rooms.GetLength(0) - 1))
+                    {
+                        MyCursor.SetX(0);
+                        refresh = true;
+                    }
+                    else if(Rooms[MyCursor.GetX() + 1, MyCursor.GetY()] != null)
+                    {
+                        MyCursor.SetX(MyCursor.GetX() + 1);
+                        refresh = true;
+                    }
+                    MyCursor.SetCurrentRoom(Rooms[MyCursor.GetX(), MyCursor.GetY()]);
+
+                    break;
+
+                case ConsoleKey.RightArrow:
+                    if (MyCursor.GetCords()[1] == (Rooms.GetLength(1) -1))
+                    {
+                        MyCursor.SetY(Rooms.GetLength(1) - 1);
+                        refresh = true;
+                    }
+                    else if(Rooms[MyCursor.GetX(), MyCursor.GetY() +1] != null)
+                    {
+                        MyCursor.SetY(MyCursor.GetY() + 1);
+                        refresh = true;
+                    }
+                    MyCursor.SetCurrentRoom(Rooms[MyCursor.GetX(), MyCursor.GetY()]);
+
+                    break;
+
+                case ConsoleKey.LeftArrow:
+                    if (MyCursor.GetCords()[1] == 0)
+                    {
+                        MyCursor.SetY(Rooms.GetLength(0) - 1);
+                        refresh = true;
+                    }
+                    else if (Rooms[MyCursor.GetX(), MyCursor.GetY()-1] != null)
+                    {
+                        MyCursor.SetY(MyCursor.GetY() - 1);
+                        refresh = true;
+                    }
+                    MyCursor.SetCurrentRoom(Rooms[MyCursor.GetX(), MyCursor.GetY()]);
+
+                    break;
+            }
+            if (refresh)
             {
                 Console.Clear();
-                Start();
+                DrawArray();
+                refresh = false;
             }
-            
         }
 
         private int Redo()
@@ -60,7 +133,7 @@ namespace RoomConstrutorExperiment
             int ReturnValue;
             Console.Clear();
             Console.WriteLine("Please give a valid input in form of a whole number");
-            if(!(int.TryParse(Console.ReadLine(), out ReturnValue)))
+            if (!(int.TryParse(Console.ReadLine(), out ReturnValue)))
             {
                 ReturnValue = Redo();
             }
@@ -73,18 +146,29 @@ namespace RoomConstrutorExperiment
             Console.WriteLine("X: " + X);
             Console.WriteLine("Y: " + Y);
             Console.WriteLine("Rooms: " + AmountOfRooms);
-            Console.Write("\n\n\n\n\n");
-            for(int i = 0; i < Rooms.GetLength(0); i++)
+            Console.WriteLine("Cursor X and Y: [" + MyCursor.GetX() + "],[" + MyCursor.GetY() + "]");
+            try
+            {
+                Console.WriteLine("Room value: " + MyCursor.GetCurrentRoom().GetValue());
+            }
+            catch { Console.WriteLine("Room value: null"); }
+            Console.Write("\n\n\n");
+            for (int i = 0; i < Rooms.GetLength(0); i++)
             {
                 Console.Write("        ");
-                for(int x = 0; x < Rooms.GetLength(1); x++)
+                for (int x = 0; x < Rooms.GetLength(1); x++)
                 {
-                    if(Rooms[i,x] == null)
+                    if ((MyCursor.GetCords()[0] == i && MyCursor.GetCords()[1] == x))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write("O");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else if (Rooms[i, x] == null)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write("#");
                         Console.ForegroundColor = ConsoleColor.White;
-                        
                     }
                     else
                     {
@@ -105,9 +189,12 @@ namespace RoomConstrutorExperiment
             int Tempy = RNG.Next(0, Rooms.GetLength(1));
             int tempPicked;
             bool FoundASpot;
-            Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, true);
+            MyCursor.SetX(Tempx);
+            MyCursor.SetY(Tempy);
+            Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, true, RNG.Next(0,101));
+            MyCursor.SetCurrentRoom(Rooms[Tempx, Tempy]);
 
-            for(int i = 1; i < roomstoconstruct; i++)
+            for (int i = 1; i < roomstoconstruct; i++)
             {
                 Postions = new List<int> { 0, 1, 2, 3 };
                 FoundASpot = false;
@@ -117,11 +204,11 @@ namespace RoomConstrutorExperiment
                     switch (tempPicked)
                     {
                         case 0:
-                            if((Tempx + 1)  < (X-1 ) && Rooms[(Tempx + 1),Tempy] == null)
+                            if ((Tempx + 1) < (X - 1) && Rooms[(Tempx + 1), Tempy] == null)
                             {
                                 Tempx++;
-                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false);
-                                FoundASpot = true;                                
+                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false, RNG.Next(0, 101));
+                                FoundASpot = true;
                             }
                             else
                             {
@@ -130,10 +217,10 @@ namespace RoomConstrutorExperiment
                             break;
 
                         case 1:
-                            if ((Tempx - 1) > -1 && Rooms[(Tempx -1), Tempy] == null)
+                            if ((Tempx - 1) > -1 && Rooms[(Tempx - 1), Tempy] == null)
                             {
                                 Tempx--;
-                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false);
+                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false, RNG.Next(0, 101));
                                 FoundASpot = true;
                             }
                             else
@@ -143,10 +230,10 @@ namespace RoomConstrutorExperiment
                             break;
 
                         case 2:
-                            if ((Tempy + 1) < (Y - 1) && Rooms[Tempx,(Tempy + 1)] == null)
+                            if ((Tempy + 1) < (Y - 1) && Rooms[Tempx, (Tempy + 1)] == null)
                             {
                                 Tempy++;
-                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false);
+                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false, RNG.Next(0, 101));
                                 FoundASpot = true;
                             }
                             else
@@ -159,7 +246,7 @@ namespace RoomConstrutorExperiment
                             if ((Tempy - 1) > -1 && Rooms[Tempx, (Tempy - 1)] == null)
                             {
                                 Tempy--;
-                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false);
+                                Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false, RNG.Next(0, 101));
                                 FoundASpot = true;
                             }
                             else
@@ -168,11 +255,11 @@ namespace RoomConstrutorExperiment
                             }
                             break;
                     }
-                    if(FoundASpot == true)
+                    if (FoundASpot == true)
                     {
                         break;
                     }
-                    else if(x == 3) 
+                    else if (x == 3)
                     {
                         if (RNG.Next(0, 101) > 25)
                         {
@@ -185,7 +272,7 @@ namespace RoomConstrutorExperiment
                             int[] tempHolder = GiveRandomRoom();
                             Tempx = tempHolder[0];
                             Tempy = tempHolder[1];
-                            Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false);
+                            Rooms[Tempx, Tempy] = new Room(Tempx, Tempy, false, RNG.Next(0, 101));
                             break;
                         }
                     }
@@ -197,11 +284,11 @@ namespace RoomConstrutorExperiment
         {
             int tempx;
             int tempy;
-            while(true)
+            while (true)
             {
                 tempx = RNG.Next(0, Rooms.GetLength(0));
                 tempy = RNG.Next(0, Rooms.GetLength(1));
-                if(Rooms[tempx, tempy] != null)
+                if (Rooms[tempx, tempy] != null)
                 {
                     return new int[2] { tempx, tempy };
                 }
@@ -221,6 +308,48 @@ namespace RoomConstrutorExperiment
                     return new int[2] { tempx, tempy };
                 }
             }
+        }
+    }
+    class Cursor
+    {
+        private int xCord = 0;
+        private int yCord = 0;
+        private Room CurrentRoom;
+
+        public Room GetCurrentRoom()
+        {
+            return CurrentRoom;
+        }
+
+        public int GetX()
+        {
+            return xCord;
+        }
+
+        public int GetY()
+        {
+            return yCord;
+        }
+
+        public void SetCurrentRoom(Room currentroom)
+        {
+            CurrentRoom = currentroom;
+        }
+
+        public int[] GetCords()
+        {
+            return new int[] { xCord, yCord };
+        }
+
+
+        public void SetX(int x)
+        {
+            xCord = x;
+        }
+
+        public void SetY(int y)
+        {
+            yCord = y;
         }
     }
 }
