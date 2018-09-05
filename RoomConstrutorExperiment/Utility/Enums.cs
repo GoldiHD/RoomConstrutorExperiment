@@ -10,4 +10,9 @@ namespace RoomConstrutorExperiment.Utility
     {
         Map, Combat
     }
+
+    public enum Direction
+    {
+        North, South, East, West
+    }
 }

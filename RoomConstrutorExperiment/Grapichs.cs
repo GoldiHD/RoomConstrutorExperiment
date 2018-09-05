@@ -9,11 +9,18 @@ namespace RoomConstrutorExperiment
 {
     class Grapichs
     {
+        int XDrawingStart = 0;
+        int XDrawingEnd = 0;
+        int YDrawingStart = 0;
+        int YDrawingEnd = 0;
+        int ScreenRes = 20;
+
 
         public void DrawMap()
         {
             Console.Clear();
             DrawStats();
+            CalculateDrawPos();
             DrawRooms();
         }
 
@@ -22,16 +29,17 @@ namespace RoomConstrutorExperiment
             Console.WriteLine("World");
             Console.Write("X: " + SingleTon.GetRooms().GetLength(0) + "          ");
             Console.WriteLine("Y: " + SingleTon.GetRooms().GetLength(1));
-            Console.WriteLine("Rooms: " + SingleTon.GetRooms().GetLength(0) + SingleTon.GetRooms().GetLength(1));
+            Console.WriteLine("Cursor X: " + SingleTon.GetCursor().GetX() + "     Y: " + SingleTon.GetCursor().GetY());
+            Console.WriteLine("Rooms: " + (SingleTon.GetRooms().GetLength(0) * SingleTon.GetRooms().GetLength(1)));
 
         }
 
         private void DrawRooms() //limit map to 50*50 and move the "camera" around the map 
         {
-            for (int i = 0; i < SingleTon.GetRooms().GetLength(0); i++)
+            for (int i = XDrawingStart; i < XDrawingEnd; i++)
             {
                 Console.Write("        ");
-                for (int x = 0; x < SingleTon.GetRooms().GetLength(1); x++)
+                for (int x = YDrawingStart; x < YDrawingEnd; x++)
                 {
                     if ((SingleTon.GetCursor().GetCords()[0] == i && SingleTon.GetCursor().GetCords()[1] == x))
                     {
@@ -51,9 +59,69 @@ namespace RoomConstrutorExperiment
                         Console.Write("@");
                         Console.ForegroundColor = ConsoleColor.White;
                     }
-                    Console.Write(" ");
+                    Console.Write("   ");
+                }
+                Console.WriteLine("\n");
+            }
+        }
+            
+
+        private void CalculateDrawPos()
+        {
+            XDrawingStart = 0;
+            YDrawingStart = 0;
+            XDrawingEnd = 0;
+            YDrawingEnd = 0;
+            if (SingleTon.GetRooms().GetLength(0) < ScreenRes && SingleTon.GetRooms().GetLength(1) < ScreenRes)
+            {
+                XDrawingStart = 0;
+                YDrawingStart = 0;
+                XDrawingEnd = SingleTon.GetRooms().GetLength(0);
+                YDrawingEnd = SingleTon.GetRooms().GetLength(1);
+            }
+            else
+            {
+                if ((SingleTon.GetCursor().GetX() - (ScreenRes / 2)) > 0)
+                {
+                    XDrawingStart += SingleTon.GetCursor().GetX() - (ScreenRes / 2);
+                }
+                else
+                {
+                    XDrawingEnd += (ScreenRes / 2) - SingleTon.GetCursor().GetX();
+                    XDrawingStart += 0;
+                }
+
+                if ((SingleTon.GetCursor().GetX() + (ScreenRes / 2)) < SingleTon.GetRooms().GetLength(0))
+                {
+                    XDrawingEnd = SingleTon.GetCursor().GetX() + (ScreenRes / 2);
+                }
+                else
+                {
+                    XDrawingStart += (ScreenRes / 2) - (SingleTon.GetRooms().GetLength(0) - SingleTon.GetCursor().GetX());
+                    XDrawingEnd += SingleTon.GetCursor().GetX() + (SingleTon.GetRooms().GetLength(0) - SingleTon.GetCursor().GetX());
+                }
+
+                if ((SingleTon.GetCursor().GetY() - (ScreenRes / 2)) > 0)
+                {
+                    YDrawingStart += SingleTon.GetCursor().GetY() - (ScreenRes / 2);
+                }
+                else
+                {
+                    YDrawingEnd += (ScreenRes / 2) - SingleTon.GetCursor().GetY();
+                    YDrawingStart = 0;
+                }
+
+                if ((SingleTon.GetCursor().GetY() + (ScreenRes / 2)) < SingleTon.GetRooms().GetLength(1))
+                {
+                    YDrawingEnd += SingleTon.GetCursor().GetY() + (ScreenRes / 2);
+                }
+                else
+                {
+                    YDrawingStart += (ScreenRes / 2) - (SingleTon.GetRooms().GetLength(1) - SingleTon.GetCursor().GetY()); ;
+                    YDrawingEnd += SingleTon.GetCursor().GetY() + (SingleTon.GetRooms().GetLength(1) - SingleTon.GetCursor().GetY());
                 }
             }
         }
+
     }
 }

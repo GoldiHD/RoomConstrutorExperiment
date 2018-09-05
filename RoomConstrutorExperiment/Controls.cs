@@ -14,7 +14,7 @@ namespace RoomConstrutorExperiment
         {
             if(cursor == null)
             {
-                SingleTon.GetCursor();
+                cursor = SingleTon.GetCursor();
             }
             Console.WriteLine("Controls need a rework");
             switch (key)
