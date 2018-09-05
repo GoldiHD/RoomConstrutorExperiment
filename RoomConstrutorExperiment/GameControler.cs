@@ -23,7 +23,7 @@ namespace RoomConstrutorExperiment
                 CurrentInput = Console.ReadKey();
                 if(controls.KeyCommands(CurrentInput.Key))
                 {
-                    //refresh map
+                    Screen.DrawMap();
                 }
             }
         }
