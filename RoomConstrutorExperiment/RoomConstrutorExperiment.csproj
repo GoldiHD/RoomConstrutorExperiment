@@ -43,9 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls.cs" />
+    <Compile Include="Cursor.cs" />
+    <Compile Include="GameControler.cs" />
+    <Compile Include="Generation\GenerateRooms.cs" />
+    <Compile Include="Generation\Menu.cs" />
+    <Compile Include="Grapichs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Room.cs" />
+    <Compile Include="Rooms\Room.cs" />
+    <Compile Include="Utility\Enums.cs" />
+    <Compile Include="Utility\SingleTon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

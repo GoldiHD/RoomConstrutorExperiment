@@ -9,8 +9,8 @@ namespace RoomConstrutorExperiment
     public class Room
     {
         bool StartingRoom;
-        private int X;
-        private int Y;
+        public int X;
+        public int Y;
         private int Value;
 
         //private roomObject;
@@ -27,7 +27,6 @@ namespace RoomConstrutorExperiment
         {
             return Value;
         }
-
 
     }
 }

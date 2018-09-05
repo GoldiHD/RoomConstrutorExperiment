@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RoomConstrutorExperiment.Generation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace RoomConstrutorExperiment
         Random RNG = new Random();
         bool refresh = false;
 
-        static void Main(string[] args) { new Program().Start(); }
+        static void Main(string[] args) { new Menu().Startup(); }
 
         public void Start()
         {
@@ -308,48 +309,6 @@ namespace RoomConstrutorExperiment
                     return new int[2] { tempx, tempy };
                 }
             }
-        }
-    }
-    class Cursor
-    {
-        private int xCord = 0;
-        private int yCord = 0;
-        private Room CurrentRoom;
-
-        public Room GetCurrentRoom()
-        {
-            return CurrentRoom;
-        }
-
-        public int GetX()
-        {
-            return xCord;
-        }
-
-        public int GetY()
-        {
-            return yCord;
-        }
-
-        public void SetCurrentRoom(Room currentroom)
-        {
-            CurrentRoom = currentroom;
-        }
-
-        public int[] GetCords()
-        {
-            return new int[] { xCord, yCord };
-        }
-
-
-        public void SetX(int x)
-        {
-            xCord = x;
-        }
-
-        public void SetY(int y)
-        {
-            yCord = y;
         }
     }
 }
