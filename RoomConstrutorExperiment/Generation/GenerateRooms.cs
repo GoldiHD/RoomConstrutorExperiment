@@ -12,7 +12,7 @@ namespace RoomConstrutorExperiment.Generation
         Random RNG = new Random(Guid.NewGuid().GetHashCode()); //should be better random
         Room[,] AllRooms;
         Room[,] RoomsConnected;
-        List
+        List<Waypoints> waypoints = new List<Waypoints>();
 
         public void GenerateWorld(int roomsToCreate)
         {
@@ -155,12 +155,73 @@ namespace RoomConstrutorExperiment.Generation
             {
                 LastusedRoom = CheckNeightboors(LastusedRoom);
             }
-
         }
 
         private Room CheckNeightboors(Room CheckRoom)
         {
-            return true;
+            Waypoints Temp = new Waypoints(CheckRoom.X, CheckRoom.Y);
+            if ((AllRooms[CheckRoom.X + 1, CheckRoom.Y] != null) && (RoomsConnected[CheckRoom.X, CheckRoom.Y] == null))
+            {
+                Temp.ToggleNorth();
+            }
+
+            if((AllRooms[CheckRoom.X - 1, CheckRoom.Y] != null) && (RoomsConnected[CheckRoom.X, CheckRoom.Y] == null))
+            {
+                Temp.ToggleSouth();
+            }
+
+            if ((AllRooms[CheckRoom.X, CheckRoom.Y + 1] != null) && (RoomsConnected[CheckRoom.X, CheckRoom.Y] == null))
+            {
+                Temp.ToggleEast();
+            }
+
+            if((AllRooms[CheckRoom.X, CheckRoom.Y - 1]!= null) && (RoomsConnected[CheckRoom.X, CheckRoom.Y] == null))
+            {
+                Temp.ToggleWest();
+            }
+
+            int Amount = 0;
+
+            foreach (bool element in Temp.ReturnDirecetions())
+            {
+                if(element)
+                {
+                    Amount++;
+                }
+            }
+
+            if(Amount == 2 || Amount == 3)
+            {
+                
+            }
+            else if(Amount == 1)
+            {
+                switch(Temp.GetSingleDirection())
+                {
+                    case Direction.North:
+                        RoomsConnected[CheckRoom.X + 1, CheckRoom.Y] = AllRooms[CheckRoom.X + 1, CheckRoom.Y];
+                        return AllRooms[CheckRoom.X + 1, CheckRoom.Y];
+
+                    case Direction.South:
+                        RoomsConnected[CheckRoom.X - 1, CheckRoom.Y] = AllRooms[CheckRoom.X - 1, CheckRoom.Y];
+                        return AllRooms[CheckRoom.X - 1, CheckRoom.Y];
+
+                    case Direction.East:
+                        RoomsConnected[CheckRoom.X, CheckRoom.Y + 1] = AllRooms[CheckRoom.X, CheckRoom.Y + 1];
+                        return AllRooms[CheckRoom.X, CheckRoom.Y + 1];
+
+                    case Direction.West:
+                        RoomsConnected[CheckRoom.X, CheckRoom.Y - 1] = AllRooms[CheckRoom.X, CheckRoom.Y - 1];
+                        return AllRooms[CheckRoom.X, CheckRoom.Y - 1];
+
+
+                }
+            }
+            else
+            {
+
+                //find new room from waypoints
+            }
         }
 
         private int[] GivePassageRooms()//Create Passages between rooms
@@ -171,24 +232,69 @@ namespace RoomConstrutorExperiment.Generation
 
     }
 
-    class waypoints
+    class Waypoints
     {
         int X;
         int Y;
 
-        bool North = false;
-        bool South = false;
-        bool East = false;
-        bool West = false;
+        List<bool> ArrayOfDirecetions = new List<bool>() {false, false, false, false};
 
-        public waypoints(int x, int y, bool N, bool S, bool E, bool W)
+        public Waypoints(int x, int y)
         {
             X = x;
             Y = y;
-            North = N;
-            South = S;
-            East = E;
-            West = W;
+        }
+
+        public void ToggleNorth()
+        {
+            ArrayOfDirecetions[0] = true;
+        }
+
+        public void ToggleSouth()
+        {
+            ArrayOfDirecetions[1] = true;
+        }
+
+
+        public void ToggleEast()
+        {
+            ArrayOfDirecetions[2] = true;
+        }
+
+        public void ToggleWest()
+        {
+            ArrayOfDirecetions[3] = true;
+        }
+
+        public bool[] ReturnDirecetions()
+        {
+            return ArrayOfDirecetions.ToArray();
+        }
+
+        public Direction PickRandomOpenDirection()
+        {
+            switch(ArrayOfDirecetions.FindIndex(x => x.Equals(true)))
+            {
+
+            }
+        }
+
+        public Direction GetSingleDirection()
+        {
+            switch(ArrayOfDirecetions.FindIndex(x => x.Equals(true)))
+            {
+                case 0:
+                    return Direction.North;
+
+                case 1:
+                    return Direction.South;
+
+                case 2:
+                    return Direction.East;
+
+                default:
+                    return Direction.West;
+            }
         }
 
     }
